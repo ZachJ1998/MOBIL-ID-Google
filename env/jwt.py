@@ -70,12 +70,12 @@ class User():
     def create(self):
         self.idNum = "15"
         self.name = "Zach Jones"
-        self.eagle_bucks = "$50.24"
+        self.eagle_bucks = "$58.25"
         self.meals_remaining = "10"
         self.kudos_earned = "15"
         self.kudos_required = "20"
         self.id_pin = "3905"
-        self.print_balance = "60.42"
+        self.print_balance = "54.40"
         self.mailbox = "0738"
         self.barcodeType = BarcodeType.QR
 
