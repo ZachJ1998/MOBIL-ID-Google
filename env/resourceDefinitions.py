@@ -74,14 +74,7 @@ def makeLoyaltyClassResource(classId):
         "kind": "walletobjects#latLongPoint",
         "latitude": 40.7406578,
         "longitude": -74.00208940000002
-    }],
-      "heroImage": {
-        "sourceUri": {
-            "uri":  "https://i.imgur.com/EPBd7Jq.png",
-            "description": "Oklahoma Christian"
-            }
-        }  
-    
+    }]  
   }
  
   return payload
@@ -109,10 +102,17 @@ def makeLoyaltyObjectResource(classId, objectId, user: User):
         "type": user.barcodeType,
         "value": user.idNum
     },
+    "heroImage": {
+        "sourceUri": {
+            "uri":  user.StudentPhoto,
+            "description": "Student Picture",
+            "label": "heroImg"
+        }
+    },
     "textModulesData": [
         {
             "header": "Eagle Bucks",
-            "body": user.eagle_bucks,
+            "body": "$" + user.eagle_bucks,
             "id": "myfield1"
         },
         {

@@ -25,10 +25,10 @@ from Crypto import Random
 #############################
 
 class BarcodeType:
-  PDF417 = 'pdf417'
-  Aztec = 'aztec'
-  QR = 'qrCode'
-  Code128 = 'code128'
+  PDF417 = 'PDF_417'
+  Aztec = 'AZTEC'
+  QR = 'QR_CODE'
+  Code128 = 'CODE_128'
  
 
 class Field(object):
@@ -52,6 +52,7 @@ class PassInformation(object):
     self.infoModuleData = []
     self.loyaltyPoints = []
     self.barcode = []
+    self.heroImage = []
   
 
   def addTextModuleData(self, key, value, label=''):
@@ -64,6 +65,10 @@ class PassInformation(object):
     altText = ''
     barcode = Barcode(value, BarcodeType, altText, messageEncoding='iso-8859-1')
     self.barcode.append(Field(key, value, label))
+  
+  def addHeroImageData(self, key, value, label =''):
+    self.heroImage.append(Field(key, value, label))
+   
 
 
 
@@ -86,6 +91,7 @@ class User():
         try:
             # try to parse request body
             self.data = r.json()
+            
         except:
             # if bad response from OC,
             # invalidate user
@@ -121,6 +127,8 @@ class User():
           except:
             self.mailbox = "None"
 
+          self.StudentPhoto = self.data['PhotoURL']
+
           self.barcodeType = BarcodeType.QR
 
 class googlePassJwt:
@@ -151,10 +159,11 @@ class googlePassJwt:
     passInformation.addInfoModuleData('print', user.print_balance, 'Print Balance')
     passInformation.addInfoModuleData('boxnumber', user.mailbox, 'Mailbox Number') # use rest API function to get object and determine if user has
     # mailbox after passing in object ID
-    passInformation.addTextModuleData('cash', "$" + user.eagle_bucks, 'Eagle Bucks')
+    passInformation.addTextModuleData('cash', '$' + user.eagle_bucks, 'Eagle Bucks')
     passInformation.addTextModuleData('meals',  user.meals_remaining, 'Meals Remaining')
     passInformation.addTextModuleData('ethos', user.kudos_earned + "/" + user.kudos_required, 'Kudos')
     passInformation.addBarcodeData('code', user.barcodeType, 'Barcode')
+    passInformation.addHeroImageData('image', user.StudentPhoto, 'heroImg')
 
 
   def generateUnsignedJwt(self):
