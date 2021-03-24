@@ -18,4 +18,4 @@ passes/*.pass
 # macOS & Cache Files
 .DS_Store
 __pycache__/
-.vscode/
+/.vscode/
