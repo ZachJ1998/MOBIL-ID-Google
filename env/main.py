@@ -1,9 +1,13 @@
 import config # contains constants
 import services
 import uuid # std library for unique identifier generation
+from jwt import User
 
 SAVE_LINK = "https://pay.google.com/gp/v/save/" # Save link that uses JWT. See https://developers.google.com/pay/passes/guides/get-started/implementing-the-api/save-to-google-pay#add-link-to-email
 verticalType = services.VerticalType.LOYALTY
+enteredId = "1544380"
+user = User(enteredId)
+user.create()
 
 
 # your classUid should be a hash based off of pass metadata, for the demo we will use pass-type_class_uniqueid
@@ -20,7 +24,7 @@ objectUid = str(verticalType).split('.')[1] + '_OBJECT_'+ str(uuid.uuid4()) # CH
 objectId = '%s.%s' % (config.ISSUER_ID,objectUid)
 
 def makePass(verticalType ,classId, objectId):
-  objectJwt = services.makeSkinnyJwt(verticalType, classId, objectId)
+  objectJwt = services.makeSkinnyJwt(verticalType, classId, objectId, user)
   if objectJwt is not None:
     print('Here is pass:\n%s%s' % (SAVE_LINK, objectJwt.decode('UTF-8')))
 

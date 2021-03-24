@@ -1,9 +1,14 @@
 import config
 import time
-
+from config import DatabaseAccess as db
 # for jwt signing. see https://google-auth.readthedocs.io/en/latest/reference/google.auth.jwt.html#module-google.auth.jwt
 from google.auth import crypt as cryptGoogle
 from google.auth import jwt as jwtGoogle
+import hashlib, secrets, requests, time
+from base64 import b64encode, b64decode
+from Crypto.Util import Padding
+from Crypto.Cipher import AES
+from Crypto import Random
 
 
 #############################
@@ -56,28 +61,67 @@ class PassInformation(object):
     self.infoModuleData.append(Field(key, value, label))
 
   def addBarcodeData(self, key, value, label=''):
-    user = User()
-    user.create()
-    barcode = Barcode(user.idNum, BarcodeType, str(user.idNum),messageEncoding='iso-8859-1')
+    altText = ''
+    barcode = Barcode(value, BarcodeType, altText, messageEncoding='iso-8859-1')
     self.barcode.append(Field(key, value, label))
 
 
 
 class User():
-    '''
-    User is valid, store data in python object
-    '''
-    def create(self):
-        self.idNum = "15"
-        self.name = "Zach Jones"
-        self.eagle_bucks = "$58.25"
-        self.meals_remaining = "10"
-        self.kudos_earned = "15"
-        self.kudos_required = "20"
-        self.id_pin = "3905"
-        self.print_balance = "54.40"
-        self.mailbox = "0738"
-        self.barcodeType = BarcodeType.QR
+      def __init__(self, entered_id: str, entered_pin: str = None):
+        self.valid = True
+
+        self.id_num = entered_id
+        #id_num = "1524743"
+        password = 'E@gleM0BileP@ss'
+        
+        # Generate Request
+        token = db.encrypt(self.id_num + '-' + str(time.time()), password)
+        request_URL = 'https://account.oc.edu/mobilepass/details/' + self.id_num + '?token=' + token
+        # Request
+        r = requests.get(request_URL)
+        data = r.json()
+         
+        r = requests.get(request_URL, timeout=5)
+        try:
+            # try to parse request body
+            self.data = r.json()
+        except:
+            # if bad response from OC,
+            # invalidate user
+            print("error")
+
+      '''
+      User is valid, store data in python object
+      '''
+      def create(self):
+          
+          self.idNum = self.id_num
+          self.name = self.data['FullName']
+          try:
+            self.eagle_bucks = self.data['EagleBucks']
+          except:
+            self.eagle_bucks = "None"
+
+          self.meals_remaining = self.data['MealsRemaining']
+          try:
+            self.kudos_earned = str(self.data['KudosEarned'])
+            self.kudos_required = str(self.data['KudosRequired'])
+          except:
+            self.kudos_earned = "Exempt"
+            self.kudos_required = "Exempt"
+
+          self.id_pin = self.data['IDPin']
+          try:
+            self.print_balance = self.data['PrintBalance']
+          except:
+            self.print_balance = "None"
+          try:
+            self.mailbox = self.data['Mailbox']
+          except:
+            self.mailbox = "None"
+
+          self.barcodeType = BarcodeType.QR
 
 class googlePassJwt:
   def __init__(self):
@@ -96,11 +140,9 @@ class googlePassJwt:
     self.payload.setdefault('loyaltyClasses',[])
     self.payload['loyaltyClasses'].append(resourcePayload)
 
-  def addLoyaltyObject(self, resourcePayload):
-    user = User()
-    user.create()
+  def addLoyaltyObject(self, resourcePayload, user):
     passInformation = PassInformation()
-
+    user.create()
     self.payload.setdefault('loyaltyObjects',[])
     self.payload['loyaltyObjects'].append(resourcePayload)
     passInformation.accountName = user.name

@@ -1,4 +1,5 @@
 # Virual Environment
+Scripts/*
 bin/
 lib/
 pyvenv.cfg

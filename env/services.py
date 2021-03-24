@@ -8,8 +8,7 @@ EXISTS_MESSAGE = "No changes will be made when saved by link. To update info, us
 NOT_EXIST_MESSAGE = "Will be inserted when user saves by link/button for first time\n"
 
 
-user = jwt.User()
-user.create()
+
 #############################
 #
 #  These are services that you would expose to front end so they can generate save links or buttons.
@@ -93,17 +92,17 @@ def handleInsertCallStatusCode(insertCallResponse, idType, id, checkClassId=None
 
   return
 
-def makeSkinnyJwt(verticalType, classId, objectId):
+def makeSkinnyJwt(verticalType, classId, objectId, user):
 
   signedJwt = None
   classResourcePayload = None
   objectResourcePayload = None
   classResponse = None
   objectResponse = None
-
+  
   try:
     # get class definition and object definition
-    classResourcePayload, objectResourcePayload = getClassAndObjectDefinitions(verticalType, classId, objectId, classResourcePayload, objectResourcePayload)
+    classResourcePayload, objectResourcePayload = getClassAndObjectDefinitions(verticalType, classId, objectId, classResourcePayload, objectResourcePayload, user)
 
     print('\nMaking REST call to insert class: (%s)' % (classId))
     # make authorized REST call to explicitly insert class into Google server.
@@ -125,7 +124,7 @@ def makeSkinnyJwt(verticalType, classId, objectId):
     googlePassJwt = jwt.googlePassJwt()
     
     # only need to add objectId in JWT because class and object definitions were pre-inserted via REST call
-    loadObjectIntoJWT(verticalType, googlePassJwt, {"id": objectId})
+    loadObjectIntoJWT(verticalType, googlePassJwt, {"id": objectId}, user)
 
     # sign JSON to make signed JWT
     signedJwt = googlePassJwt.generateSignedJwt()
@@ -148,9 +147,9 @@ def makeSkinnyJwt(verticalType, classId, objectId):
 #  @param String objectResourcePayload - payload for the object
 #
 #############################
-def getClassAndObjectDefinitions(verticalType, classId, objectId, classResourcePayload, objectResourcePayload):
+def getClassAndObjectDefinitions(verticalType, classId, objectId, classResourcePayload, objectResourcePayload, user: jwt.User):
   # get class definition and object definition
-  
+
   classResourcePayload = resourceDefinitions.makeLoyaltyClassResource(classId)
   objectResourcePayload = resourceDefinitions.makeLoyaltyObjectResource(classId, objectId, user)
 
@@ -166,7 +165,7 @@ def getClassAndObjectDefinitions(verticalType, classId, objectId, classResourceP
 #  @param String objectResourcePayload - object to insert
 #
 #############################
-def loadObjectIntoJWT(verticalType, googlePassJwt, objectResourcePayload):
+def loadObjectIntoJWT(verticalType, googlePassJwt, objectResourcePayload, user: jwt.User):
   if verticalType == VerticalType.FLIGHT:
     googlePassJwt.addFlightObject(objectResourcePayload)
   elif verticalType == VerticalType.EVENTTICKET:
@@ -174,7 +173,7 @@ def loadObjectIntoJWT(verticalType, googlePassJwt, objectResourcePayload):
   elif verticalType == VerticalType.GIFTCARD:
     googlePassJwt.addGiftcardObject(objectResourcePayload)
   elif verticalType == VerticalType.LOYALTY:
-    googlePassJwt.addLoyaltyObject(objectResourcePayload)
+    googlePassJwt.addLoyaltyObject(objectResourcePayload, user)
   elif verticalType == VerticalType.OFFER:
     googlePassJwt.addOfferObject(objectResourcePayload)        
   elif verticalType == VerticalType.TRANSIT:
