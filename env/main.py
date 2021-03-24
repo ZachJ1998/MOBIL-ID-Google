@@ -5,7 +5,7 @@ from jwt import User
 
 SAVE_LINK = "https://pay.google.com/gp/v/save/" # Save link that uses JWT. See https://developers.google.com/pay/passes/guides/get-started/implementing-the-api/save-to-google-pay#add-link-to-email
 verticalType = services.VerticalType.LOYALTY
-enteredId = "1544380"
+enteredId = "1524743"
 user = User(enteredId)
 user.create()
 

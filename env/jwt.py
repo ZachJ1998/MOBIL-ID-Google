@@ -142,7 +142,7 @@ class googlePassJwt:
 
   def addLoyaltyObject(self, resourcePayload, user):
     passInformation = PassInformation()
-    user.create()
+    
     self.payload.setdefault('loyaltyObjects',[])
     self.payload['loyaltyObjects'].append(resourcePayload)
     passInformation.accountName = user.name
