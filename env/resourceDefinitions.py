@@ -102,13 +102,15 @@ def makeLoyaltyObjectResource(classId, objectId, user: User):
         "type": user.barcodeType,
         "value": user.idNum
     },
-    "heroImage": {
-        "sourceUri": {
-            "uri":  user.StudentPhoto,
-            "description": "Student Picture",
-            "label": "heroImg"
-        }
-    },
+        "heroImage": {
+            "kind": "walletobjects#image",
+            "sourceUri": {
+                "uri": "https://i.imgur.com/I6p54as.png",
+                "image":  user.StudentPhoto,
+                "label": "heroImg"
+            }
+        },
+    
     "textModulesData": [
         {
             "header": "Eagle Bucks",
