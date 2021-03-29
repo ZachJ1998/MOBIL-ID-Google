@@ -148,11 +148,12 @@ def makeLoyaltyObjectResource(classId, objectId, user: User):
         "showLastUpdateTime": "true"
     },
     
-    "locations": [{
-      "kind": "walletobjects#latLongPoint"
-      ,"latitude": 35.613762
-      ,"longitude": -97.472137
-    }]
+    "locations": {
+        "kind": "walletobjects#latLongPoint",
+        "latitude": 35.647388,
+        "longitude": -97.453438
+      },
+        
   }
   return payload
 

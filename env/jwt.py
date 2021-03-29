@@ -167,8 +167,10 @@ class User():
           self.StudentPhoto = self.data['PhotoURL']
 
           self.barcodeType = BarcodeType.QR
-          self.locations = None
-         
+          # self.locations.latitude = 35.647388
+          # self.locations.longitude = -97.453438
+          self.latitude = 35.647388
+          self.longitude = -97.453438
 
           # try:
           #   resp = requests.get(self.StudentPhoto, stream=True).raw
