@@ -1,6 +1,6 @@
 import datetime
 from google.oauth2 import service_account # pip install google-auth
-from jwt import User
+from jwt import User, Location
 def makeLoyaltyClassResource(classId):
   # Define the resource representation of the Class
   # values should be from your DB/services; here we hardcode information
@@ -57,30 +57,34 @@ def makeLoyaltyClassResource(classId):
     },
     "locations": [{
         "kind": "walletobjects#latLongPoint",
-        "latitude": 37.424015499999996,
-        "longitude": -122.09259560000001
+        "latitude": 35.613306,
+        "longitude": -97.467825,
+        "label" : "lab"
+      },    
+      {
+        "kind": "walletobjects#latLongPoint",
+        "latitude": 35.611219,
+        "longitude": -97.467255,
+        "label" : "garvey"
       },
       {
         "kind": "walletobjects#latLongPoint",
-        "latitude": 37.424354,
-        "longitude": -122.09508869999999
+        "latitude": 35.61201,
+        "longitude": -97.46850,
+        "label" : "brew"
       },
       {
         "kind": "walletobjects#latLongPoint",
-        "latitude": 37.7901435,
-        "longitude": -122.39026709999997
-      },
-      {
-        "kind": "walletobjects#latLongPoint",
-        "latitude": 40.7406578,
-        "longitude": -74.00208940000002
-    }]  
+        "latitude": 35.6115,
+        "longitude":-97.4695,
+        "label" : "branch"
+    }] 
   }
  
   return payload
 
 
-def makeLoyaltyObjectResource(classId, objectId, user: User):
+def makeLoyaltyObjectResource(classId, objectId, user: User, location: Location):
   # Define the resource representation of the Object
   # values should be from your DB/services; here we hardcode information
 
@@ -148,11 +152,30 @@ def makeLoyaltyObjectResource(classId, objectId, user: User):
         "showLastUpdateTime": "true"
     },
     
-    "locations": {
+    "locations": [{
         "kind": "walletobjects#latLongPoint",
-        "latitude": 35.647388,
-        "longitude": -97.453438
+        "latitude": 35.613306,
+        "longitude": -97.467825,
+        "label" : "lab"
+      },    
+      {
+        "kind": "walletobjects#latLongPoint",
+        "latitude": 35.611219,
+        "longitude": -97.467255,
+        "label" : "garvey"
       },
+      {
+        "kind": "walletobjects#latLongPoint",
+        "latitude": 35.61201,
+        "longitude": -97.46850,
+        "label" : "brew"
+      },
+      {
+        "kind": "walletobjects#latLongPoint",
+        "latitude": 35.6115,
+        "longitude":-97.4695,
+        "label" : "branch"
+    }]  
         
   }
   return payload

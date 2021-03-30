@@ -83,11 +83,11 @@ class PassInformation(object):
   def addHeroImageData(self, key, value, label ='', changeMessage=None):
     self.heroImage.append(Field(key, value, label, changeMessage))
 
-  def addLocationsData(self, latitude, longitude, altitude=0.0, relevantText=None, maxDistance=None):
-    self.locations.append(Location(latitude, longitude, altitude=0.0, relevantText=None, maxDistance=None))
+  def addLocationsData(self, latitude, longitude, altitude=0.0, relevantText=None, maxDistance=None, label=''):
+    self.locations.append(Location(latitude, longitude, altitude, relevantText, maxDistance, label))
 
 class Location(object):
-    def __init__(self, latitude, longitude, altitude=0.0, relevantText=None, maxDistance=None):
+    def __init__(self, latitude, longitude, altitude=0.0, relevantText=None, maxDistance=None, label=''):
         # Required. Latitude, in degrees, of the location.
         try:
             self.latitude = float(latitude)
@@ -108,6 +108,7 @@ class Location(object):
         self.relevantText = relevantText
         # Optional. Notification distance
         self.maxDistance = maxDistance
+        self.label = label
 
 
 class User():
@@ -169,9 +170,11 @@ class User():
           self.barcodeType = BarcodeType.QR
           # self.locations.latitude = 35.647388
           # self.locations.longitude = -97.453438
-          self.latitude = 35.647388
-          self.longitude = -97.453438
-
+          # self.latitude = 35.647388
+          # self.longitude = -97.453438
+          
+          
+          
           # try:
           #   resp = requests.get(self.StudentPhoto, stream=True).raw
 
@@ -286,8 +289,8 @@ class googlePassJwt:
     
     img_path = "idPhoto.jpg"
     id_path = "uneditedIDPhoto.jpg"
-    name = ("Jacob","Button")
-
+    first, last = user.name.split(' ', 1)
+    User.create_hero_image((first, last), "uneditedIDPhoto.jpg", "idPhoto.jpg")
     self.payload.setdefault('loyaltyObjects',[])
     self.payload['loyaltyObjects'].append(resourcePayload)
     passInformation.accountName = user.name
@@ -305,10 +308,18 @@ class googlePassJwt:
     #user.StudentPhoto = User.create_hero_image(name, "uneditedIDPhoto.jpg", "idPhoto.jpg")
     #img_to_data("idPhoto.jpg")
     #user.StudentPhoto = Image.save("idPhoto.jpg", format="uri")
-    passInformation.addLocationsData(35.611219, -97.467255, relevantText='Welcome to Garvey! Tap to scan your ID.', maxDistance=20)
-    passInformation.addLocationsData(35.6115, -97.4695, relevantText='Welcome to the Branch! Tap to scan your ID.', maxDistance=20)
-    passInformation.addLocationsData(35.61201, -97.46850, relevantText='Welcome to the Brew! Tap to scan your ID.', maxDistance=20)
-    passInformation.addLocationsData(35.647388, -97.453438, relevantText='Welcome to the Lab! Tap to scan your ID.', maxDistance=20)
+    # passInformation.addLocationsData(35.611219, -97.467255, relevantText='Welcome to Garvey! Tap to scan your ID.', maxDistance=20, 'garvey')
+    # passInformation.addLocationsData(35.6115, -97.4695, relevantText='Welcome to the Branch! Tap to scan your ID.', maxDistance=20, 'branch')
+    # passInformation.addLocationsData(35.61201, -97.46850, relevantText='Welcome to the Brew! Tap to scan your ID.', maxDistance=20, 'brew')
+    # passInformation.addLocationsData(35.647388, -97.453438, relevantText='Welcome to the Lab! Tap to scan your ID.', maxDistance=20, 'lab')
+    
+    
+    #passInformation.addLocationsData(35.613306, -97.467825, 'Welcome to the Lab! Tap to scan your ID.', 20, 'lab')
+    passInformation.addLocationsData(35.6115, -97.4695, 'Welcome to the Branch! Tap to scan your ID.', 20, 'branch')
+    passInformation.addLocationsData(35.61201, -97.46850, 'Welcome to the Brew! Tap to scan your ID.', 20, 'brew')
+    passInformation.addLocationsData(35.611219, -97.467255, 'Welcome to Garvey! Tap to scan your ID.', 20, 'garvey')
+
+
 
   def generateUnsignedJwt(self):
     unsignedJwt = {}

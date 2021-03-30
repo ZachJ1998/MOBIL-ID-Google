@@ -92,7 +92,7 @@ def handleInsertCallStatusCode(insertCallResponse, idType, id, checkClassId=None
 
   return
 
-def makeSkinnyJwt(verticalType, classId, objectId, user):
+def makeSkinnyJwt(verticalType, classId, objectId, user, location):
 
   signedJwt = None
   classResourcePayload = None
@@ -102,7 +102,7 @@ def makeSkinnyJwt(verticalType, classId, objectId, user):
   
   try:
     # get class definition and object definition
-    classResourcePayload, objectResourcePayload = getClassAndObjectDefinitions(verticalType, classId, objectId, classResourcePayload, objectResourcePayload, user)
+    classResourcePayload, objectResourcePayload = getClassAndObjectDefinitions(verticalType, classId, objectId, classResourcePayload, objectResourcePayload, user, location)
 
     print('\nMaking REST call to insert class: (%s)' % (classId))
     # make authorized REST call to explicitly insert class into Google server.
@@ -147,11 +147,11 @@ def makeSkinnyJwt(verticalType, classId, objectId, user):
 #  @param String objectResourcePayload - payload for the object
 #
 #############################
-def getClassAndObjectDefinitions(verticalType, classId, objectId, classResourcePayload, objectResourcePayload, user: jwt.User):
+def getClassAndObjectDefinitions(verticalType, classId, objectId, classResourcePayload, objectResourcePayload, user: jwt.User, location: jwt.Location):
   # get class definition and object definition
 
   classResourcePayload = resourceDefinitions.makeLoyaltyClassResource(classId)
-  objectResourcePayload = resourceDefinitions.makeLoyaltyObjectResource(classId, objectId, user)
+  objectResourcePayload = resourceDefinitions.makeLoyaltyObjectResource(classId, objectId, user, location)
 
   return classResourcePayload, objectResourcePayload
 
