@@ -7,7 +7,7 @@ from google.auth.transport.requests import AuthorizedSession
 # constants from config file
 import config
 import services
-
+import requests
 
 ###############################
 #
@@ -135,6 +135,7 @@ def insertObject(verticalType, payload):
   credentials = makeOauthCredential()
   response = None
 
+  user = services.jwt.User
 
   # Define insert() REST call of target vertical
   uri = 'https://walletobjects.googleapis.com/walletobjects/v1'
@@ -197,10 +198,37 @@ def getObject(verticalType, objectId):
       uri+path          # REST API endpoint
       ,headers=headers  # Header; optional
     )
-
-
   return response
 
+def updatePass(verticalType, objectId, objectResourcePayload):
+  headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json; charset=UTF-8'
+  }
+  credentials = makeOauthCredential()
+  response = None
+
+  # Define get() REST call of target vertical
+  uri = 'https://walletobjects.googleapis.com/walletobjects/v1'
+  postfix = 'Object'
+  path = createPath(verticalType, postfix, objectId)
+ 
+  # There is no Google API for Passes Client Library for Python.
+  # Authorize a http client with credential generated from Google API client library.
+  ## see https://google-auth.readthedocs.io/en/latest/user-guide.html#making-authenticated-requests
+  authed_session = AuthorizedSession(credentials)
+
+  # make the GET request to make an get(); this returns a response object
+  # other methods require different http methods; for example, get() requires authed_Session.get(...)
+  # check the reference API to make the right REST call
+  ## https://developers.google.com/pay/passes/reference/v1/
+  ## https://google-auth.readthedocs.io/en/latest/user-guide.html#making-authenticated-requests
+  response = authed_session.put(
+      uri+path,          # REST API endpoint
+      headers=headers,  # Header; optional 
+      json = objectResourcePayload
+    )
+  return response
 ###############################
 #
 # Creates path for part of uri
@@ -226,4 +254,5 @@ def createPath(verticalType, postfix, id_to_use=''):
     path = '/%s%s/%s' % ("offer", postfix, id_to_use)      
   elif verticalType == services.VerticalType.TRANSIT:
     path = '/%s%s/%s' % ("transit", postfix, id_to_use)
+
   return path

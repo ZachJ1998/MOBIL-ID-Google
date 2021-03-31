@@ -5,7 +5,7 @@ lib/
 pyvenv.cfg
 
 # Configuration Files
-config.py
+
 certificates/*.pem
 
 # Local Test Database

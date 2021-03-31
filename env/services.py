@@ -71,17 +71,21 @@ def handleGetCallStatusCode(getCallResponse, idType, id, checkClassId=None):
 #  @return void
 #
 #############################
-def handleInsertCallStatusCode(insertCallResponse, idType, id, checkClassId=None, verticalType=None):
+def handleInsertCallStatusCode(insertCallResponse, idType, id,objectResourcePayload, checkClassId=None, verticalType=None):
   if insertCallResponse.status_code == 200:
     print('%sId (%s) insertion success!\n' % (idType, id) )
   elif insertCallResponse.status_code == 409:  # id resource exists for this issuer account
-    print('%sId: (%s) already exists. %s' % (idType, id, EXISTS_MESSAGE) )
-
+    print('%sId: (%s) already exists. %s' % (idType, id, EXISTS_MESSAGE))
+    
+    
     # for object insert, do additional check
     if idType == "object":
       getCallResponse = None
       # get existing object Id data
       getCallResponse = restMethods.getObject(verticalType, id) # if it is a new object Id, expected status is 409
+      if getCallResponse != 409:
+        restMethods.updatePass(verticalType, id, objectResourcePayload)
+        print("Supposedly updated Pass")
 
       # check if object's classId matches target classId
       classIdOfObjectId = getCallResponse.json()['classId']
@@ -115,10 +119,10 @@ def makeSkinnyJwt(verticalType, classId, objectId, user, location):
 
     # continue based on insert response status. Check https://developers.google.com/pay/passes/reference/v1/statuscodes
     # check class insert response. Will print out if class insert succeeds or not. Throws error if class resource is malformed.
-    handleInsertCallStatusCode(classResponse, "class", classId, None, None)
+    handleInsertCallStatusCode(classResponse, "class", classId, objectResourcePayload,None, None)
 
     # check object insert response. Will print out if object insert succeeds or not. Throws error if object resource is malformed, or if existing objectId's classId does not match the expected classId
-    handleInsertCallStatusCode(objectResponse, "object", objectId, classId, verticalType)
+    handleInsertCallStatusCode(objectResponse, "object", objectId,objectResourcePayload ,classId, verticalType)
 
     # put into JSON Web Token (JWT) format for Google Pay API for Passes
     googlePassJwt = jwt.googlePassJwt()

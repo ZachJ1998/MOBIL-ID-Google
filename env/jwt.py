@@ -15,12 +15,10 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 
+import urllib
 import math
 from io import BytesIO
 
-import mimetypes
-import os
-import sys
 #############################
 #
 # class that defines JWT format for a Google Pay Pass.
@@ -34,14 +32,14 @@ import sys
 #
 #############################
 
-class BarcodeType:
+class BarcodeType: # Barcode type is the various supported barcodes the user can choose from. 
   PDF417 = 'PDF_417'
   Aztec = 'AZTEC'
   QR = 'QR_CODE'
   Code128 = 'CODE_128'
  
 
-class Field(object):
+class Field(object): 
   def __init__(self, key, value, label, changeMessage):
     self.key = key  # Required. The key must be unique within the scope
     self.value = value  # Required. Value of the field. For example, 42
@@ -50,7 +48,7 @@ class Field(object):
     if changeMessage:
       self.changeMessage = changeMessage
 
-class Barcode(object):
+class Barcode(object): # class Barcode allows the user to change the barcode type
   def __init__(self, message, format=BarcodeType.PDF417, altText='', messageEncoding='iso-8859-1'):
     self.format = format
     self.message = message  # Required. Message or payload to be displayed as a barcode
@@ -58,7 +56,7 @@ class Barcode(object):
     if altText:
       self.altText = altText  # Optional. Text displayed near the barcode
 
-class PassInformation(object):
+class PassInformation(object): # This init function for class Pass Information sets all modules to null, no data
   def __init__(self):
 
     self.textModulesData = []
@@ -86,7 +84,9 @@ class PassInformation(object):
   def addLocationsData(self, latitude, longitude, altitude=0.0, relevantText=None, maxDistance=None, label=''):
     self.locations.append(Location(latitude, longitude, altitude, relevantText, maxDistance, label))
 
-class Location(object):
+  # All of the above functions are used to add data to the given modules. 
+
+class Location(object): # Location class for adding location objects to the pass
     def __init__(self, latitude, longitude, altitude=0.0, relevantText=None, maxDistance=None, label=''):
         # Required. Latitude, in degrees, of the location.
         try:
@@ -134,6 +134,8 @@ class User():
             # if bad response from OC,
             # invalidate user
             print("error")
+      
+      # This init function accesses Oklahoma Christian's database to gather info on a member based upon their entered ID number.
 
       '''
       User is valid, store data in python object
@@ -168,31 +170,10 @@ class User():
           self.StudentPhoto = self.data['PhotoURL']
 
           self.barcodeType = BarcodeType.QR
-          # self.locations.latitude = 35.647388
-          # self.locations.longitude = -97.453438
-          # self.latitude = 35.647388
-          # self.longitude = -97.453438
-          
-          
-          
-          # try:
-          #   resp = requests.get(self.StudentPhoto, stream=True).raw
 
-          # except requests.exceptions.RequestException as e:  
-          #     print("error")
-
-          # try:
-          #     StudentPhoto = Image.open(resp)
-              
-
-          # except IOError:
-          #     print("Unable to open image")
-
-          #img.save('test.jpg', 'jpg')        
-          #img_path = "idPhoto.jpeg"
-          #name = ("Jacob","Button")
-          #User.create_hero_image(name, StudentPhoto, img_path)
-
+          # This create function is responsible for using the accessed information from the database to create a user with those fields. 
+          url = self.data['PhotoURL']
+          id_path = Image.open(urllib.request.urlopen(url))
           
 
       '''
@@ -268,6 +249,8 @@ class User():
 
           return hero_image
 
+    # The function above creates the hero image object used to show the member and their name.
+
 class googlePassJwt:
   def __init__(self):
     self.audience = config.AUDIENCE
@@ -284,17 +267,24 @@ class googlePassJwt:
     self.payload.setdefault('loyaltyClasses',[])
     self.payload['loyaltyClasses'].append(resourcePayload)
 
-  def addLoyaltyObject(self, resourcePayload, user):
-    passInformation = PassInformation()
+  def addLoyaltyObject(self, resourcePayload, user): #addLoyaltyObject adds all the required fields to a pass. 
+    passInformation = PassInformation() # create a new object of Pass Information. 
+    #Pass Information allows you to add information to fields on the pass
+    url = user.data['PhotoURL']
+    im = Image.open(urllib.request.urlopen(url))
+    id_path = im.save("uneditedIDPhoto.png")
+    img_path = "idPhoto.png" 
+    id_path = "uneditedIDPhoto.png"
+    first, last = user.name.split(' ', 1) # This splits the name correctly for the create_hero_image to make the ID photo.
+    # It gets passed in as (first, last) as name
     
-    img_path = "idPhoto.jpg"
-    id_path = "uneditedIDPhoto.jpg"
-    first, last = user.name.split(' ', 1)
-    User.create_hero_image((first, last), "uneditedIDPhoto.jpg", "idPhoto.jpg")
+    
+    User.create_hero_image((first, last), "uneditedIDPhoto.png", "idPhoto.png") # This creates the hero image object
     self.payload.setdefault('loyaltyObjects',[])
     self.payload['loyaltyObjects'].append(resourcePayload)
-    passInformation.accountName = user.name
-    passInformation.accountId = user.idNum
+    
+    passInformation.accountName = user.name # The pass name is equal to the user's name
+    passInformation.accountId = user.idNum # The pass ID number is equal to the user's ID number
     passInformation.addInfoModuleData('pin',user.id_pin, 'ID Pin')
     passInformation.addInfoModuleData('print', user.print_balance, 'Print Balance','Your print balance is now %@.')
     passInformation.addInfoModuleData('boxnumber', user.mailbox, 'Mailbox Number') # use rest API function to get object and determine if user has
@@ -303,8 +293,13 @@ class googlePassJwt:
     passInformation.addTextModuleData('meals',  user.meals_remaining, 'Meals Remaining','You have %@ meal swipes remaining.')
     passInformation.addTextModuleData('ethos', user.kudos_earned + "/" + user.kudos_required, 'Kudos','You have %@ Kudos of your Semester Goal.')
     passInformation.addBarcodeData('code', user.barcodeType, 'Barcode')
-    user.StudentPhoto = "https://i.imgur.com/I6p54as.png"
-    passInformation.addHeroImageData('image', user.StudentPhoto, 'heroImg')
+    user.StudentPhoto = "https://i.imgur.com/I6p54as.png" 
+    passInformation.addHeroImageData('image', user.StudentPhoto, 'heroImg') 
+    # The code above (lines 301-312) adds all the information to the pass. It is all dynamic, and depends on the user. There are change messages that occur when the user scans 
+    # a pass and changes a data field. The coresponding message will get sent. 
+
+
+
     #user.StudentPhoto = User.create_hero_image(name, "uneditedIDPhoto.jpg", "idPhoto.jpg")
     #img_to_data("idPhoto.jpg")
     #user.StudentPhoto = Image.save("idPhoto.jpg", format="uri")
@@ -319,7 +314,7 @@ class googlePassJwt:
     passInformation.addLocationsData(35.61201, -97.46850, 'Welcome to the Brew! Tap to scan your ID.', 20, 'brew')
     passInformation.addLocationsData(35.611219, -97.467255, 'Welcome to Garvey! Tap to scan your ID.', 20, 'garvey')
 
-
+    # Once geofencing is implemented again by Google, this will add location objects to the pass.
 
   def generateUnsignedJwt(self):
     unsignedJwt = {}
@@ -337,3 +332,5 @@ class googlePassJwt:
     signedJwt = jwtGoogle.encode(self.signer, jwtToSign)
 
     return signedJwt
+
+    # The functions above generate a signed pass. A pass cannot be sent out until it is signed.
