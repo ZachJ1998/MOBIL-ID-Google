@@ -3,7 +3,6 @@ import services
 import uuid # std library for unique identifier generation
 from jwt import User, Location
 import restMethods
-from googleapiclient.discovery import build
 import requests
 
 SAVE_LINK = "https://pay.google.com/gp/v/save/" # Save link that uses JWT. See https://developers.google.com/pay/passes/guides/get-started/implementing-the-api/save-to-google-pay#add-link-to-email
