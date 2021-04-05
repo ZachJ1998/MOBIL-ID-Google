@@ -1,6 +1,6 @@
 import config
 import time
-from config import DatabaseAccess as db
+from config import AES256 
 # for jwt signing. see https://google-auth.readthedocs.io/en/latest/reference/google.auth.jwt.html#module-google.auth.jwt
 from google.auth import crypt as cryptGoogle
 from google.auth import jwt as jwtGoogle
@@ -65,6 +65,7 @@ class PassInformation(object): # This init function for class Pass Information s
     self.barcode = []
     self.heroImage = []
     self.locations = []
+    objectID = None
   
 
   def addTextModuleData(self, key, value, label='', changeMessage=None):
@@ -83,6 +84,9 @@ class PassInformation(object): # This init function for class Pass Information s
 
   def addLocationsData(self, latitude, longitude, altitude=0.0, relevantText=None, maxDistance=None, label=''):
     self.locations.append(Location(latitude, longitude, altitude, relevantText, maxDistance, label))
+    
+  def linkObjectId(self, objectIDLinked):
+    self.objectID = objectIDLinked
 
   # All of the above functions are used to add data to the given modules. 
 
@@ -115,25 +119,29 @@ class User():
       def __init__(self, entered_id: str, entered_pin: str = None):
         self.valid = True
         self.id_num = entered_id
-        #id_num = "1524743"
-        password = 'E@gleM0BileP@ss'
-        
-        # Generate Request
-        token = db.encrypt(self.id_num + '-' + str(time.time()), password)
-        request_URL = 'https://account.oc.edu/mobilepass/details/' + self.id_num + '?token=' + token
-        # Request
+
+        # OC_SHARED_SECRET='E@gleM0BileP@ss'
+        # id = entered_id
+
+        # token = AES256()
+        # request_URL = 'https://account.oc.edu/mobilepass/details/' + id + '?token=' + token.encrypt(id + '-' + str(time.time()), OC_SHARED_SECRET).hex()
+
+        # print(request_URL)
+        # r = requests.get(request_URL)
+        token = AES256()
+        request_URL = 'https://account.oc.edu/mobilepass/details/' + entered_id + '?token=' + token.encrypt(entered_id + '-' + str(time.time()), config.OC_SHARED_SECRET).hex()
+
+        #print(request_URL)
         r = requests.get(request_URL)
-        data = r.json()
-         
-        r = requests.get(request_URL, timeout=5)
+        data = r.json()                
         try:
-            # try to parse request body
-            self.data = r.json()
+          # try to parse request body
+          self.data = r.json()
             
         except:
-            # if bad response from OC,
-            # invalidate user
-            print("error")
+          # if bad response from OC,
+          # invalidate user
+          print("error")
       
       # This init function accesses Oklahoma Christian's database to gather info on a member based upon their entered ID number.
 
@@ -152,11 +160,11 @@ class User():
           self.meals_remaining = self.data['MealsRemaining']
           try:
             self.kudos_earned = str(self.data['KudosEarned'])
-            self.kudos_required = str(self.data['KudosRequired'])
+            #self.kudos_required = str(self.data['KudosRequired'])
           except:
             self.kudos_earned = "Exempt"
-            self.kudos_required = "Exempt"
 
+          self.kudos_required = str(self.data['KudosRequired'])
           self.id_pin = self.data['IDPin']
           try:
             self.print_balance = self.data['PrintBalance']
@@ -272,6 +280,7 @@ class googlePassJwt:
     #Pass Information allows you to add information to fields on the pass
     url = user.data['PhotoURL']
     im = Image.open(urllib.request.urlopen(url))
+    # Change this to user.url to save into im
     id_path = im.save("uneditedIDPhoto.png")
     img_path = "idPhoto.png" 
     id_path = "uneditedIDPhoto.png"
@@ -297,7 +306,6 @@ class googlePassJwt:
     passInformation.addHeroImageData('image', user.StudentPhoto, 'heroImg') 
     # The code above (lines 301-312) adds all the information to the pass. It is all dynamic, and depends on the user. There are change messages that occur when the user scans 
     # a pass and changes a data field. The coresponding message will get sent. 
-
 
 
     #user.StudentPhoto = User.create_hero_image(name, "uneditedIDPhoto.jpg", "idPhoto.jpg")

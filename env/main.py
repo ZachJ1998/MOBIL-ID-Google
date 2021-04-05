@@ -21,18 +21,29 @@ classId = "3388000000009088928.LOYALTY_CLASS_d8a36821-33d1-4371-bdeb-e0da0d0fbe0
 #'%s.%s' % (config.ISSUER_ID,classUid)
 
 # your objectUid should be a hash based off of pass metadata, for the demo we will use pass-type_object_uniqueid
-objectUid = str(verticalType).split('.')[1] + '_OBJECT_'+ str(uuid.uuid4()) # CHANGEME
-# check Reference API for format of "id" (https://developers.google.com/pay/passes/reference/v1/).
-# Must be alphanumeric characters, '.', '_', or '-'.
-objectId = "3388000000009088928.LOYALTY_OBJECT_f829ef5d-7f6a-4234-9d93-17fbf4da021a"
-# '%s.%s' % (config.ISSUER_ID,objectUid)
+# objectUid = str(verticalType).split('.')[1] + '_OBJECT_'+ str(uuid.uuid4()) # CHANGEME
+# # check Reference API for format of "id" (https://developers.google.com/pay/passes/reference/v1/).
+# # Must be alphanumeric characters, '.', '_', or '-'.
+# objectId = "3388000000009088928.LOYALTY_OBJECT_88b04c7c-bf87-476a-aae3-97d3d818a7af"
+#'%s.%s' % (config.ISSUER_ID,objectUid)
+# object ID for mobiletest = "3388000000009088928.LOYALTY_OBJECT_88b04c7c-bf87-476a-aae3-97d3d818a7af"
+# object ID for andrew = "3388000000009088928.LOYALTY_OBJECT_05b05925-1cf6-4fe8-9522-3a922336c252"
 
+def getobjectfromID(enteredID):
+  objectUid = str(verticalType).split('.')[1] + '_OBJECT_'+ str(enteredId) # CHANGEME
+  # check Reference API for format of "id" (https://developers.google.com/pay/passes/reference/v1/).
+  # Must be alphanumeric characters, '.', '_', or '-'.
+  objectId = '%s.%s' % (config.ISSUER_ID,objectUid)
 
-def makePass(verticalType ,classId, objectId): # This makes the pass based on the type, class ID and Object ID
-  objectJwt = services.makeSkinnyJwt(verticalType, classId, objectId, user, loc)
+  return objectId
+
+linkedID = getobjectfromID(enteredId)
+
+def makePass(verticalType ,classId, linkedID): # This makes the pass based on the type, class ID and Object ID
+  objectJwt = services.makeSkinnyJwt(verticalType, classId, linkedID, user, loc)
   if objectJwt is not None:
     print('Here is pass:\n%s%s' % (SAVE_LINK, objectJwt.decode('UTF-8')))
 
   return
 
-makePass(verticalType, classId, objectId) # This implements the function above
+makePass(verticalType, classId, linkedID) # This implements the function above
