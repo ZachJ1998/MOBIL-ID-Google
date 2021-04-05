@@ -8,8 +8,7 @@ import requests
 SAVE_LINK = "https://pay.google.com/gp/v/save/" # Save link that uses JWT. See https://developers.google.com/pay/passes/guides/get-started/implementing-the-api/save-to-google-pay#add-link-to-email
 verticalType = services.VerticalType.LOYALTY
 enteredId = "1524743"
-loc = Location(0.0, 0.0)
-user = User(enteredId, loc)
+user = User(enteredId)
 user.create()
 
 
@@ -40,7 +39,7 @@ def getobjectfromID(enteredID):
 linkedID = getobjectfromID(enteredId)
 
 def makePass(verticalType ,classId, linkedID): # This makes the pass based on the type, class ID and Object ID
-  objectJwt = services.makeSkinnyJwt(verticalType, classId, linkedID, user, loc)
+  objectJwt = services.makeSkinnyJwt(verticalType, classId, linkedID, user)
   if objectJwt is not None:
     print('Here is pass:\n%s%s' % (SAVE_LINK, objectJwt.decode('UTF-8')))
 

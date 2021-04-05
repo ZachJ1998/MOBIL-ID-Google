@@ -1,6 +1,6 @@
 import datetime
 from google.oauth2 import service_account # pip install google-auth
-from jwt import User, Location
+from jwt import User
 def makeLoyaltyClassResource(classId):
   # Define the resource representation of the Class
   # values should be from your DB/services; here we hardcode information
@@ -84,7 +84,7 @@ def makeLoyaltyClassResource(classId):
   return payload
 
 
-def makeLoyaltyObjectResource(classId, objectId, user: User, location: Location):
+def makeLoyaltyObjectResource(classId, objectId, user: User):
   # Define the resource representation of the Object
   # values should be from your DB/services; here we hardcode information
 

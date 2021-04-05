@@ -3,6 +3,7 @@ Scripts/*
 bin/
 lib/
 pyvenv.cfg
+test_restMethods.py
 
 # Configuration Files
 config.py
