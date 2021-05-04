@@ -135,11 +135,11 @@ def makeLoyaltyObjectResource(classId, objectId, user: jwt.User):
         payload.update({'locations': [f.json_dict() for f in passinfo.locations]})
         print("Added locations")
         
-    print("Done with updating")
-    print(json.dumps(payload))
+    # print("Done with updating")
+    # print(json.dumps(payload))
 
-    with open('data.txt', 'w') as outfile:
-        json.dump(payload, outfile)  
+    # with open('data.txt', 'w') as outfile:
+    #     json.dump(payload, outfile)  
     
     try:
         return payload

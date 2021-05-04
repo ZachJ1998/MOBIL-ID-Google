@@ -149,10 +149,11 @@ def insertObject(verticalType, payload):
   # check the reference API to make the right REST call
   ## https://developers.google.com/pay/passes/reference/v1/
   ## https://google-auth.readthedocs.io/en/latest/user-guide.html#making-authenticated-requests
+  print(type(payload))
   response = authed_session.post(
       uri+path          # REST API endpoint
       ,headers=headers  # Header; optional
-      ,json={"id": "3388000000009088928.LOYALTY_OBJECT_1524743", "classId": "3388000000009088928.LOYALTY_CLASS_d8a36821-33d1-4371-bdeb-e0da0d0fbe0b", "state": "active", "accountId": "1524743", "accountName": "Mr. Zach Jones", "barcode": {"type": "QR_CODE", "value": "1524743", "alternateText": "1524743"}, "heroImage": {"kind": "walletobjects#image", "sourceUri": {"uri": "https://i.imgur.com/I6p54as.png", "image": "asdsad", "label": "heroImg"}}, "textModulesData": [{"id": "myfield1", "header": "Eagle Bucks", "body": "$0.24"}, {"id": "myfield2", "header": "Meals Remaining", "body": "1"}, {"id": "myfield3", "header": "Kudos", "body": "21/20"}], "infoModulesData": {"labelValueRows": [{"columns": [{"value": "3905", "label": "ID Pin"}, {"value": "56.09", "label": "Print Balance"}, {"value": "0738", "label": "Mailbox Number"}]}], "showLastUpdateTime": "true"}, "locations": [{"kind": "walletobjects#latLongPoint", "latitude": 35.611219, "longitude": -97.467255, "label": "garvey"}, {"kind": "walletobjects#latLongPoint", "latitude": 35.6115, "longitude": -97.4695, "label": "brew"}, {"kind": "walletobjects#latLongPoint", "latitude": 35.61201, "longitude": -97.4685, "label": "branch"}]}
+      ,json=payload
   )
   
   return response

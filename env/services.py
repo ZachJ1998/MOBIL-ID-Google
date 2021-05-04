@@ -116,16 +116,15 @@ def makeSkinnyJwt(verticalType, classId, objectId, user):
 
     print('\nMaking REST call to insert object')
     payload = json.dumps(objectResourcePayload)
-    print(payload)
     # make authorized REST call to explicitly insert object into Google server.
-    objectResponse = restMethods.insertObject(verticalType, payload)
+    objectResponse = restMethods.insertObject(verticalType, objectResourcePayload)
     
     # continue based on insert response status. Check https://developers.google.com/pay/passes/reference/v1/statuscodes
     # check class insert response. Will print out if class insert succeeds or not. Throws error if class resource is malformed.
-    handleInsertCallStatusCode(classResponse, "class", classId, payload, None, None)
+    handleInsertCallStatusCode(classResponse, "class", classId, objectResourcePayload, None, None)
 
     # check object insert response. Will print out if object insert succeeds or not. Throws error if object resource is malformed, or if existing objectId's classId does not match the expected classId
-    handleInsertCallStatusCode(objectResponse, "object", objectId, payload, classId, verticalType)
+    handleInsertCallStatusCode(objectResponse, "object", objectId, objectResourcePayload, classId, verticalType)
     # put into JSON Web Token (JWT) format for Google Pay API for Passes
     googlePassJwt = jwt.googlePassJwt()
 
